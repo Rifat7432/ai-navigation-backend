@@ -16,13 +16,13 @@ const createUser = catchAsync(async (req, res) => {
           delete (userData as any).phone;
      }
 
-     await UserService.createUserToDB(userData);
+   const result = await UserService.createUserToDB(userData);
 
      sendResponse(res, {
           success: true,
           statusCode: StatusCodes.OK,
           message: 'Account created. Please verify your email',
-          data: null,
+          data: result,
      });
 });
 const createUserByApple = catchAsync(async (req, res) => {

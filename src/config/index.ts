@@ -20,20 +20,14 @@ export default {
           jwt_refresh_secret: process.env.JWT_REFRESH_SECRET,
           jwt_refresh_expire_in: process.env.JWT_REFRESH_EXPIRE_IN,
      },
-     aws: {
-          AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY_ID,
-          AWS_SECRET_KEY: process.env.AWS_SECRET_ACCESS_KEY,
-          AWS_REGION: process.env.AWS_REGION,
-          AWS_BUCKET: process.env.AWS_BUCKET,
-     },
+
      email: {
-          emailHeader: process.env.EMAIL_HEADER_NAME || 'Reho App Mailer',
-          from: process.env.EMAIL_FROM || '',
-          user: process.env.EMAIL_USER || '',
-          // Mailgun-specific configuration
-          apiKey: process.env.EMAIL_API_KEY || '',
-          domain: process.env.EMAIL_DOMAIN || '',
-          endpoint: process.env.EMAIL_ENDPOINT || 'https://api.mailgun.net',
+          email_header: process.env.EMAIL_HEADER_NAME,
+          from: process.env.EMAIL_FROM,
+          user: process.env.EMAIL_USER,
+          port: process.env.EMAIL_PORT,
+          host: process.env.EMAIL_HOST,
+          pass: process.env.EMAIL_PASS,
      },
      express_sessoin: process.env.EXPRESS_SESSION_SECRET_KEY,
      social: {

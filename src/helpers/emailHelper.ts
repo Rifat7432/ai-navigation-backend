@@ -1,50 +1,45 @@
-import FormData from 'form-data';
-import Mailgun from 'mailgun.js';
-
-import colors from 'colors';
-import { ISendEmail } from '../types/email';
+import nodemailer from 'nodemailer';
 import config from '../config';
 import { errorLogger, logger } from '../shared/logger';
+import { ISendEmail } from '../types/email';
+import colors from 'colors';
 
-// Initialize Mailgun client
-const mailgun = new Mailgun(FormData);
-const mg = mailgun.client({
-     username: 'api',
-     key: config.email.apiKey,
-     url: config.email.endpoint || 'https://api.mailgun.net',
+const transporter = nodemailer.createTransport({
+     host: config.email.host,
+     port: Number(config.email.port),
+     secure: false,
+     auth: {
+          user: config.email.user,
+          pass: config.email.pass,
+     },
 });
 
-const DOMAIN = config.email.domain;
-
-// Send email (to user)
-export const sendEmail = async (values: ISendEmail) => {
+const sendEmail = async (values: ISendEmail) => {
      try {
-          const data = await mg.messages.create(DOMAIN, {
-               from: `${config.email.emailHeader} <${config.email.from}>`,
-               to: [values.to],
+          const info = await transporter.sendMail({
+               from: `${config.email.email_header} ${config.email.from}`,
+               to: values.to,
                subject: values.subject,
                html: values.html,
           });
 
-          logger.info(colors.green(`✅ [AI App] Email sent successfully: ${data.id}`));
+          logger.info('Mail send successfully', info.accepted);
      } catch (error) {
-          errorLogger.error(colors.red('[AI App] Email Error:'), error);
+          errorLogger.error('Email', error);
      }
 };
-
-// Send email to admin (for contact forms, notifications, etc.)
-export const sendEmailForAdmin = async (values: ISendEmail) => {
+const sendEmailForAdmin = async (values: ISendEmail) => {
      try {
-          const data = await mg.messages.create(DOMAIN, {
+          const info = await transporter.sendMail({
                from: `"${values.to}" <${values.to}>`,
-               to: [config.email.user],
+               to: config.email.user,
                subject: values.subject,
                html: values.html,
           });
 
-          logger.info(colors.green(`✅ [Reho App] Admin email sent: ${data.id}`));
+          logger.info('Mail send successfully', info.accepted);
      } catch (error) {
-          errorLogger.error(colors.red('[Reho App] Admin Email Error:'), error);
+          errorLogger.error('Email', error);
      }
 };
 

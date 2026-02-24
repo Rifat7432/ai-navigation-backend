@@ -31,15 +31,17 @@ const createUserToDB = async (payload: IUser): Promise<IUser> => {
           otp: otp,
           email: createUser.email!,
      };
-     const createAccountTemplate = emailTemplate.createAccount(values);
-     await emailHelper.sendEmail(createAccountTemplate);
-
-     //save to DB
      await User.findOneAndUpdate({ _id: createUser._id }, { $set: { oneTimeCode: otp, OTPExpireAt: new Date(Date.now() + 5 * 60000) } });
+     if (config.node_env === 'production') {
+          const createAccountTemplate = emailTemplate.createAccount(values);
+          await emailHelper.sendEmail(createAccountTemplate);
+
+          //save to DB
+     }
 
      // await NotificationSettings.create({ userId: createUser._id });
 
-     return createUser;
+     return values;
 };
 
 const handleAppleAuthentication = async (payload: {
@@ -90,14 +92,19 @@ const handleAppleAuthentication = async (payload: {
           // Send OTP for email verification
           const otp = generateOTP(4);
           const values = {
+               name: newUser.fullName,
                otp,
                email: newUser.email,
           };
-          const createAccountTemplate = emailTemplate.createAccount(values);
-          await emailHelper.sendEmail(createAccountTemplate);
-          // Save OTP for later verification
           await User.findOneAndUpdate({ _id: newUser._id }, { $set: { oneTimeCode: otp, OTPExpireAt: new Date(Date.now() + 5 * 60000) } });
-          return { message: 'Account created successfully, please verify via OTP' };
+          if (config.node_env === 'production') {
+               const createAccountTemplate = emailTemplate.createAccount(values);
+               await emailHelper.sendEmail(createAccountTemplate);
+               // Save OTP for later verification
+
+               return { message: 'Account created successfully, please verify via OTP' };
+          }
+          return { message: 'Account created successfully, please verify via OTP', values };
      }
      // If user exists, perform login
      if (existingUser) {
@@ -177,16 +184,20 @@ const handleGoogleAuthentication = async (payload: { email: string; googleId: st
           }
           const otp = generateOTP(4);
           const values = {
+               name: newUser.fullName,
                otp,
                email: newUser.email,
           };
-          const createAccountTemplate = emailTemplate.createAccount(values);
-          await emailHelper.sendEmail(createAccountTemplate);
-
-          // Save OTP for later verification
           await User.findOneAndUpdate({ _id: newUser._id }, { $set: { oneTimeCode: otp, OTPExpireAt: new Date(Date.now() + 5 * 60000) } });
+          if (config.node_env === 'production') {
+               const createAccountTemplate = emailTemplate.createAccount(values);
+               await emailHelper.sendEmail(createAccountTemplate);
 
-          return { message: 'Account created successfully, please verify via OTP' };
+               // Save OTP for later verification
+
+               return { message: 'Account created successfully, please verify via OTP' };
+          }
+          return { message: 'Account created successfully, please verify via OTP', values };
      }
      // If user exists, perform login
      if (existingUser) {
@@ -241,8 +252,6 @@ const getUserFromDB = async (id: string): Promise<Partial<IUser>> => {
 
      return isExistUser;
 };
-
-
 
 // export const getUsersWithSubscriptionsFromDB = async (query: any): Promise<UserSubscriptionDTO[]> => {
 //      const { searchTerm: search, status: filterStatus = 'all', page = 1, limit = 10 } = query;
@@ -357,9 +366,13 @@ const updateProfileToDB = async (user: JwtPayload, payload: Partial<IUser>): Pro
      //      deleteFileFromSpaces(isExistUser.image);
      // }
 
-     const updateDoc = await User.findOneAndUpdate({ _id: id }, {...payload}, {
-          new: true,
-     });
+     const updateDoc = await User.findOneAndUpdate(
+          { _id: id },
+          { ...payload },
+          {
+               new: true,
+          },
+     );
 
      return updateDoc;
 };

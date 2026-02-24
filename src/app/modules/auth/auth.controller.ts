@@ -19,7 +19,15 @@ const loginUser = catchAsync(async (req, res) => {
      if (config.node_env === 'production') {
           cookieOptions.sameSite = 'none';
      }
-     sendResponse(res, { success: true, statusCode: StatusCodes.OK, message: 'User logged in successfully.', data: { accessToken: result.accessToken, refreshToken: result.refreshToken } });
+     if (config.node_env === 'production') {
+          return sendResponse(res, {
+               success: true,
+               statusCode: StatusCodes.OK,
+               message: 'User logged in successfully.',
+               data: { accessToken: result.accessToken, refreshToken: result.refreshToken },
+          });
+     }
+     sendResponse(res, { success: true, statusCode: StatusCodes.OK, message: result.message, data: { otp: result.otp, email: result.email } });
 });
 
 const forgetPassword = catchAsync(async (req, res) => {
