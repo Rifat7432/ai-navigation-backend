@@ -1,0 +1,20 @@
+services:
+  ts-app:
+    build:
+      context: .
+    container_name: ts-app
+    restart: unless-stopped
+    init: true
+    # env_file: ./.env  # Uncomment if .env file exists
+    ports:
+      - "3000:3000" # Exposed in Dockerfile, main app port
+    networks:
+      - appnet
+    # Add depends_on here if you add external services (e.g., mongo, redis)
+
+# No external services detected in the project structure or Dockerfile.
+# If your app requires a database or other services, add them below.
+
+networks:
+  appnet:
+    driver: bridge

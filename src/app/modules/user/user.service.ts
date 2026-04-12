@@ -12,14 +12,18 @@ import { jwtHelper } from '../../../helpers/jwtHelper';
 import mongoose from 'mongoose';
 
 // create user
-const createUserToDB = async (payload: IUser): Promise<IUser> => {
-     //set role
-     const user = await User.findOne({ ...(payload.email ? { email: payload.email } : { phoneNumber: payload.phoneNumber }) });
+const createUserToDB = async (payload: Partial<IUser>) => {
+     // Check if user already exists
+     const user = await User.findOne({ email: payload.email });
      if (user) {
           throw new AppError(StatusCodes.CONFLICT, 'Email already exists');
      }
-     payload.role = USER_ROLES.USER;
-     const createUser = await User.create(payload);
+
+     // Development mode without transactions
+     const createUser = await User.create({
+          payload,
+     });
+
      if (!createUser) {
           throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user');
      }
@@ -27,19 +31,14 @@ const createUserToDB = async (payload: IUser): Promise<IUser> => {
      //send email
      const otp = generateOTP(4);
      const values = {
-          name: createUser.fullName,
+          name: createUser.email, // Use email as name since name field not in schema
           otp: otp,
           email: createUser.email!,
      };
      await User.findOneAndUpdate({ _id: createUser._id }, { $set: { oneTimeCode: otp, OTPExpireAt: new Date(Date.now() + 5 * 60000) } });
-     if (config.node_env === 'production') {
-          const createAccountTemplate = emailTemplate.createAccount(values);
-          await emailHelper.sendEmail(createAccountTemplate);
 
-          //save to DB
-     }
-
-     // await NotificationSettings.create({ userId: createUser._id });
+     const createAccountTemplate = emailTemplate.createAccount(values);
+     await emailHelper.sendEmail(createAccountTemplate);
 
      return values;
 };

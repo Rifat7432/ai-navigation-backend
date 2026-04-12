@@ -14,12 +14,10 @@ const verifyEmail = catchAsync(async (req, res) => {
 const loginUser = catchAsync(async (req, res) => {
      const { ...loginData } = req.body;
      const result = await AuthService.loginUserFromDB(loginData);
-     const cookieOptions: any = { secure: false, httpOnly: true, maxAge: 31536000000 };
 
-     if (config.node_env === 'production') {
-          cookieOptions.sameSite = 'none';
-     }
-     if (config.node_env === 'production') {
+
+
+     if (!result.otp) {
           return sendResponse(res, {
                success: true,
                statusCode: StatusCodes.OK,
@@ -54,7 +52,7 @@ const resetPasswordByUrl = catchAsync(async (req, res) => {
      sendResponse(res, { success: true, statusCode: StatusCodes.OK, message: 'Your password has been successfully reset.', data: result });
 });
 const resetPassword = catchAsync(async (req, res) => {
-     const token: any = req.headers.resetpasswordtoken;
+     const token: any = req.headers.resettoken;
      const { ...resetData } = req.body;
      const result = await AuthService.resetPasswordToDB(token!, resetData);
 
@@ -71,9 +69,9 @@ const changePassword = catchAsync(async (req, res) => {
 // resend Otp
 const resendOtp = catchAsync(async (req, res) => {
      const { email } = req.body;
-     await AuthService.resendOtpFromDb(email);
+    const result = await AuthService.resendOtpFromDb(email);
 
-     sendResponse(res, { success: true, statusCode: StatusCodes.OK, message: 'OTP sent successfully again' });
+     sendResponse(res, { success: true, statusCode: StatusCodes.OK, message: 'OTP sent successfully again',data: result });
 });
 
 // refresh token

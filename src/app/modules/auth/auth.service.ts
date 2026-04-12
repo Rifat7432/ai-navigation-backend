@@ -17,6 +17,7 @@ import { createToken } from '../../../utils/createToken';
 //login
 const loginUserFromDB = async (payload: ILoginData) => {
      const { email, password } = payload;
+
      if (!password) {
           throw new AppError(StatusCodes.BAD_REQUEST, 'Password is required!');
      }
@@ -27,14 +28,14 @@ const loginUserFromDB = async (payload: ILoginData) => {
      //check verified and status
      if (!isExistUser.verified) {
           //send mail
-          const otp = generateOTP(6);
+          const otp = generateOTP(4);
           const value = { otp, email: isExistUser.email };
           const forgetPassword = emailTemplate.resetPassword(value);
           emailHelper.sendEmail(forgetPassword);
 
           //save to DB
-          await User.findOneAndUpdate({ email }, { $set: { oneTimeCode: otp, OTPExpireAt: new Date(Date.now() + 3 * 60000) } });
-          return {otp, email: isExistUser.email, message: 'Please verify your account, check your email we send a code'};
+          await User.findOneAndUpdate({ email }, { $set: { oneTimeCode: otp, OTPExpireAt: new Date(Date.now() + 10 * 60000) } });
+          return { otp, email: isExistUser.email, message: 'Please verify your account, check your email we send a code' };
           throw new AppError(StatusCodes.CONFLICT, 'Please verify your account, then try to login again');
      }
 
@@ -71,6 +72,8 @@ const forgetPasswordToDB = async (email: string) => {
 
      //save to DB
      await User.findOneAndUpdate({ email }, { $set: { oneTimeCode: otp, OTPExpireAt: new Date(Date.now() + 3 * 60000) } });
+
+     return value;
 };
 // resend otp
 const resendOtpFromDb = async (email: string) => {
@@ -88,6 +91,8 @@ const resendOtpFromDb = async (email: string) => {
 
      //save to DB
      await User.findOneAndUpdate({ _id: isExistUser._id }, { $set: { oneTimeCode: otp, OTPExpireAt: new Date(Date.now() + 3 * 60000) } });
+
+     return values;
 };
 //forget password by email url
 const forgetPasswordByUrlToDB = async (email: string) => {

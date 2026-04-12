@@ -1,0 +1,31 @@
+## Running with Docker
+
+This project provides a multi-stage Docker setup for building and running the TypeScript application in a production-ready container. The Docker configuration uses Node.js version `22.13.1-slim` and exposes the app on port **3000**.
+
+### Requirements
+- Docker (latest)
+- Docker Compose (latest)
+- Node.js version is pinned to `22.13.1` in the Dockerfile (no need to install locally)
+
+### Environment Variables
+- The application expects environment variables to be set. You can provide these via a `.env` file in the project root. Uncomment the `env_file` line in `docker-compose.yaml` if you wish to use it.
+
+### Build and Run
+1. **Build and start the app:**
+   ```sh
+   docker compose up --build
+   ```
+   This will build the image and start the `ts-app` service.
+
+2. **Access the app:**
+   - The application will be available at [http://localhost:3000](http://localhost:3000)
+
+### Ports
+- **3000**: Main application port (exposed by the container)
+
+### Notes
+- The Docker setup uses a non-root user for security.
+- If you need to add external services (e.g., databases), update `docker-compose.yaml` accordingly.
+- For static assets, uncomment the relevant `COPY` line in the Dockerfile if needed.
+
+Refer to the Dockerfile and compose file for further customization.
