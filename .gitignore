@@ -4,3 +4,4 @@ coverage
 .env
 winston
 uploads
+src/trash.ts

@@ -13,8 +13,11 @@ const userSchema = new Schema<IUser, UserModel>(
      {
           email: {
                type: String,
+               required: true,
                unique: true,
+               sparse: true,
                lowercase: true,
+               trim: true,
           },
           fullName: { type: String },
           image: { type: String },

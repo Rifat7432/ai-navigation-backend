@@ -13,6 +13,11 @@ import mongoose from 'mongoose';
 
 // create user
 const createUserToDB = async (payload: Partial<IUser>) => {
+     // Ensure email is present before creating user
+     if (!payload.email) {
+          throw new AppError(StatusCodes.BAD_REQUEST, 'Email is required');
+     }
+
      // Check if user already exists
      const user = await User.findOne({ email: payload.email });
      if (user) {
@@ -20,9 +25,7 @@ const createUserToDB = async (payload: Partial<IUser>) => {
      }
 
      // Development mode without transactions
-     const createUser = await User.create({
-          payload,
-     });
+     const createUser = await User.create(payload);
 
      if (!createUser) {
           throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user');
