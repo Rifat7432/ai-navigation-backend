@@ -1,45 +1,46 @@
 import { StatusCodes } from 'http-status-codes';
+import AppError from '../../../errors/AppError';
 import { IVisualLandmark } from './visualLandmark.interface';
 import { VisualLandmark } from './visualLandmark.model';
-import AppError from '../../../errors/AppError';
 
-// create visual landmark
-const createVisualLandmarkToDB = async (payload: IVisualLandmark): Promise<IVisualLandmark> => {
-     const visualLandmark = await VisualLandmark.create(payload);
-     if (!visualLandmark) {
-          throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create visual landmark');
-     }
-     return visualLandmark;
+const createVisualLandmarkToDB = async (payload: IVisualLandmark) => {
+  const result = await VisualLandmark.create(payload);
+  return result;
 };
 
-// get all visual landmarks
-const getVisualLandmarksFromDB = async (query: any): Promise<IVisualLandmark[]> => {
-     const visualLandmarks = await VisualLandmark.find(query).populate('venue zone');
-     return visualLandmarks;
+const getAllVisualLandmarksFromDB = async () => {
+  const result = await VisualLandmark.find().populate('venue').populate('zone');
+  return result;
 };
 
-// get single visual landmark
-const getVisualLandmarkByIdFromDB = async (id: string): Promise<IVisualLandmark | null> => {
-     const visualLandmark = await VisualLandmark.findById(id).populate('venue zone');
-     return visualLandmark;
+const getVisualLandmarkByIdFromDB = async (id: string) => {
+  const result = await VisualLandmark.findById(id).populate('venue').populate('zone');
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Visual Landmark not found');
+  }
+  return result;
 };
 
-// update visual landmark
-const updateVisualLandmarkInDB = async (id: string, payload: Partial<IVisualLandmark>): Promise<IVisualLandmark | null> => {
-     const visualLandmark = await VisualLandmark.findByIdAndUpdate(id, payload, { new: true });
-     return visualLandmark;
+const updateVisualLandmarkInDB = async (id: string, payload: Partial<IVisualLandmark>) => {
+  const result = await VisualLandmark.findByIdAndUpdate(id, payload, { new: true });
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Visual Landmark not found');
+  }
+  return result;
 };
 
-// delete visual landmark (soft delete)
-const deleteVisualLandmarkFromDB = async (id: string): Promise<IVisualLandmark | null> => {
-     const visualLandmark = await VisualLandmark.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
-     return visualLandmark;
+const deleteVisualLandmarkFromDB = async (id: string) => {
+  const result = await VisualLandmark.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Visual Landmark not found');
+  }
+  return result;
 };
 
 export const VisualLandmarkService = {
-     createVisualLandmarkToDB,
-     getVisualLandmarksFromDB,
-     getVisualLandmarkByIdFromDB,
-     updateVisualLandmarkInDB,
-     deleteVisualLandmarkFromDB,
+  createVisualLandmarkToDB,
+  getAllVisualLandmarksFromDB,
+  getVisualLandmarkByIdFromDB,
+  updateVisualLandmarkInDB,
+  deleteVisualLandmarkFromDB,
 };

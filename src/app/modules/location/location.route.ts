@@ -7,16 +7,24 @@ import { LocationValidation } from './location.validation';
 
 const router = express.Router();
 
-// Routes
-router
-     .route('/')
-     .post(auth(USER_ROLES.USER), validateRequest(LocationValidation.createLocationZodSchema), LocationController.createLocation)
-     .get(auth(USER_ROLES.USER), LocationController.getLocations);
+router.post(
+  '/',
+  auth(USER_ROLES.USER),
+  validateRequest(LocationValidation.createLocationZodSchema),
+  LocationController.createLocation
+);
 
-router
-     .route('/:id')
-     .get(auth(USER_ROLES.USER), LocationController.getLocation)
-     .patch(auth(USER_ROLES.USER), validateRequest(LocationValidation.updateLocationZodSchema), LocationController.updateLocation)
-     .delete(auth(USER_ROLES.USER), LocationController.deleteLocation);
+router.get('/', auth(USER_ROLES.USER), LocationController.getAllLocations);
 
-export const LocationRoutes = router;
+router.get('/:id', auth(USER_ROLES.USER), LocationController.getLocationById);
+
+router.patch(
+  '/:id',
+  auth(USER_ROLES.USER),
+  validateRequest(LocationValidation.updateLocationZodSchema),
+  LocationController.updateLocation
+);
+
+router.delete('/:id', auth(USER_ROLES.USER), LocationController.deleteLocation);
+
+export const LocationRouter = router;

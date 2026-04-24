@@ -1,35 +1,46 @@
 import { z } from 'zod';
 
+const detectedLandmarkSchema = z.object({
+     landmarkId: z.string(),
+     name: z.string(),
+     confidence: z.coerce.number(),
+     boundingBox: z.object({
+          x: z.coerce.number(),
+          y: z.coerce.number(),
+          width: z.coerce.number(),
+          height: z.coerce.number(),
+     }),
+});
+
+const aiAnalysisSchema = z.object({
+     detectedVenueType: z.string().optional(),
+     detectedZone: z.string().optional(),
+     detectedLandmarks: z.array(detectedLandmarkSchema).optional(),
+     detectedText: z.string().optional(),
+     detectedLocation: z.string().optional(),
+     overallConfidence: z.coerce.number().optional(),
+     tags: z.array(z.string()).optional(),
+     analysedAt: z.preprocess((value) => (value ? new Date(value as string) : undefined), z.date().optional()),
+});
+
 const createMediaAssetZodSchema = z.object({
      body: z.object({
-          user: z.string({ required_error: 'User ID is required' }),
-          mediaType: z.enum(['image', 'video', 'audio'], { required_error: 'Media type is required' }),
-          purpose: z.enum(['grounding_photo', 'recheck_photo', 'destination_photo', 'venue_contribution', 'voice_command', 'chat_attachment'], { required_error: 'Purpose is required' }),
-          url: z.string({ required_error: 'URL is required' }),
+          user: z.string().optional(),
+          mediaType: z.enum(['image', 'video', 'audio']).optional(),
+          purpose: z.enum([
+               'grounding_photo',
+               'recheck_photo',
+               'destination_photo',
+               'venue_contribution',
+               'voice_command',
+               'chat_attachment',
+          ]).optional(),
+          url: z.string().optional(),
           mimeType: z.string().optional(),
-          sizeBytes: z.number().optional(),
-          durationSec: z.number().optional(),
+          sizeBytes: z.coerce.number().optional(),
+          durationSec: z.coerce.number().optional(),
           thumbnail: z.string().optional(),
-          aiAnalysis: z.object({
-               detectedVenueType: z.string().optional(),
-               detectedZone: z.string().optional(),
-               detectedLandmarks: z.array(z.object({
-                    landmarkId: z.string(),
-                    name: z.string(),
-                    confidence: z.number(),
-                    boundingBox: z.object({
-                         x: z.number(),
-                         y: z.number(),
-                         width: z.number(),
-                         height: z.number(),
-                    }),
-               })).optional(),
-               detectedText: z.string().optional(),
-               detectedLocation: z.string().optional(),
-               overallConfidence: z.number().optional(),
-               tags: z.array(z.string()).optional(),
-               analysedAt: z.date().optional(),
-          }).optional(),
+          aiAnalysis: aiAnalysisSchema.optional(),
           linkedVenue: z.string().optional(),
      }),
 });
@@ -38,32 +49,20 @@ const updateMediaAssetZodSchema = z.object({
      body: z.object({
           user: z.string().optional(),
           mediaType: z.enum(['image', 'video', 'audio']).optional(),
-          purpose: z.enum(['grounding_photo', 'recheck_photo', 'destination_photo', 'venue_contribution', 'voice_command', 'chat_attachment']).optional(),
+          purpose: z.enum([
+               'grounding_photo',
+               'recheck_photo',
+               'destination_photo',
+               'venue_contribution',
+               'voice_command',
+               'chat_attachment',
+          ]).optional(),
           url: z.string().optional(),
           mimeType: z.string().optional(),
-          sizeBytes: z.number().optional(),
-          durationSec: z.number().optional(),
+          sizeBytes: z.coerce.number().optional(),
+          durationSec: z.coerce.number().optional(),
           thumbnail: z.string().optional(),
-          aiAnalysis: z.object({
-               detectedVenueType: z.string().optional(),
-               detectedZone: z.string().optional(),
-               detectedLandmarks: z.array(z.object({
-                    landmarkId: z.string(),
-                    name: z.string(),
-                    confidence: z.number(),
-                    boundingBox: z.object({
-                         x: z.number(),
-                         y: z.number(),
-                         width: z.number(),
-                         height: z.number(),
-                    }),
-               })).optional(),
-               detectedText: z.string().optional(),
-               detectedLocation: z.string().optional(),
-               overallConfidence: z.number().optional(),
-               tags: z.array(z.string()).optional(),
-               analysedAt: z.date().optional(),
-          }).optional(),
+          aiAnalysis: aiAnalysisSchema.optional(),
           linkedVenue: z.string().optional(),
      }),
 });

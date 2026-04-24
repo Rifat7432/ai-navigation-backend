@@ -1,25 +1,22 @@
-import { Model } from 'mongoose';
 import { Types } from 'mongoose';
 
 export type ILocation = {
-     user: Types.ObjectId;
-     venue?: Types.ObjectId;
-     zone?: Types.ObjectId;
-     label?: string;
-     address?: string;
-     locationType?: 'indoor' | 'outdoor';
-     floor?: number;
-     gpsCoordinates: {
-          type: 'Point';
-          coordinates: [number, number];
-     };
-     indoorPosition?: {
-          x?: number;
-          y?: number;
-     };
-     isFavorite?: boolean;
-     visitedAt?: Date;
-     isDeleted?: boolean;
+  user: Types.ObjectId;
+  venue?: Types.ObjectId | null;
+  zone?: Types.ObjectId | null;
+  label?: string;
+  address?: string;
+  locationType?: 'indoor' | 'outdoor';
+  floor?: number | null;
+  gpsCoordinates?: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
+  indoorPosition?: {
+    x: number | null;
+    y: number | null;
+  };
+  isFavorite?: boolean;
+  visitedAt?: Date;
+  isDeleted?: boolean;
 };
-
-export type LocationModel = Model<ILocation>;

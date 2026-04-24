@@ -1,45 +1,46 @@
 import { StatusCodes } from 'http-status-codes';
+import AppError from '../../../errors/AppError';
 import { ILocation } from './location.interface';
 import { Location } from './location.model';
-import AppError from '../../../errors/AppError';
 
-// create location
-const createLocationToDB = async (payload: ILocation): Promise<ILocation> => {
-     const location = await Location.create(payload);
-     if (!location) {
-          throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create location');
-     }
-     return location;
+const createLocationInDB = async (payload: Partial<ILocation>) => {
+  const result = await Location.create(payload);
+  return result;
 };
 
-// get all locations
-const getLocationsFromDB = async (query: any): Promise<ILocation[]> => {
-     const locations = await Location.find(query).populate('user venue zone');
-     return locations;
+const getAllLocationsFromDB = async (userId: string) => {
+  const result = await Location.find({ user: userId }).populate('venue').populate('zone');
+  return result;
 };
 
-// get single location
-const getLocationByIdFromDB = async (id: string): Promise<ILocation | null> => {
-     const location = await Location.findById(id).populate('user venue zone');
-     return location;
+const getLocationByIdFromDB = async (id: string, userId: string) => {
+  const result = await Location.findOne({ _id: id, user: userId }).populate('venue').populate('zone');
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Location not found');
+  }
+  return result;
 };
 
-// update location
-const updateLocationInDB = async (id: string, payload: Partial<ILocation>): Promise<ILocation | null> => {
-     const location = await Location.findByIdAndUpdate(id, payload, { new: true });
-     return location;
+const updateLocationInDB = async (id: string, userId: string, payload: Partial<ILocation>) => {
+  const result = await Location.findOneAndUpdate({ _id: id, user: userId }, payload, { new: true });
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Location not found');
+  }
+  return result;
 };
 
-// delete location (soft delete)
-const deleteLocationFromDB = async (id: string): Promise<ILocation | null> => {
-     const location = await Location.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
-     return location;
+const deleteLocationFromDB = async (id: string, userId: string) => {
+  const result = await Location.findOneAndUpdate({ _id: id, user: userId }, { isDeleted: true }, { new: true });
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Location not found');
+  }
+  return result;
 };
 
 export const LocationService = {
-     createLocationToDB,
-     getLocationsFromDB,
-     getLocationByIdFromDB,
-     updateLocationInDB,
-     deleteLocationFromDB,
+  createLocationInDB,
+  getAllLocationsFromDB,
+  getLocationByIdFromDB,
+  updateLocationInDB,
+  deleteLocationFromDB,
 };

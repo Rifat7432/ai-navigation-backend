@@ -255,106 +255,6 @@ const getUserFromDB = async (id: string): Promise<Partial<IUser>> => {
      return isExistUser;
 };
 
-// export const getUsersWithSubscriptionsFromDB = async (query: any): Promise<UserSubscriptionDTO[]> => {
-//      const { searchTerm: search, status: filterStatus = 'all', page = 1, limit = 10 } = query;
-
-//      const skip = (page - 1) * limit;
-
-//      const searchFilter = search
-//           ? {
-//                  $or: [{ name: { $regex: search, $options: 'i' } }, { email: { $regex: search, $options: 'i' } }],
-//             }
-//           : {};
-
-//      const userFilter = {
-//           role: USER_ROLES.USER,
-//           status: 'active', // Exclude inactive users
-//           isDeleted: false, // Exclude deleted users
-//           ...searchFilter,
-//      };
-
-//      const pipeline: any[] = [
-//           // Step 1: Filter users
-//           { $match: userFilter },
-
-//           // Step 2: Join with subscriptions
-//           {
-//                $lookup: {
-//                     from: 'subscriptions',
-//                     localField: '_id',
-//                     foreignField: 'userId',
-//                     as: 'subscriptions',
-//                },
-//           },
-
-//           // Step 3: Sort subscriptions by createdAt descending
-//           {
-//                $addFields: {
-//                     subscriptions: { $sortArray: { input: '$subscriptions', sortBy: { createdAt: -1 } } },
-//                     latestSubscription: { $arrayElemAt: ['$subscriptions', 0] },
-//                },
-//           },
-
-//           // Step 4: Filter by subscription status
-//           {
-//                $match:
-//                     filterStatus === 'all'
-//                          ? {} // no extra filtering
-//                          : filterStatus === 'active'
-//                            ? { 'latestSubscription.status': 'active' }
-//                            : filterStatus === 'expired'
-//                              ? { 'latestSubscription.expiryDate': { $lt: new Date() }, 'latestSubscription.status': 'expired' }
-//                              : filterStatus === 'inactive'
-//                                ? { latestSubscription: { $exists: false } }
-//                                : {},
-//           },
-
-//           // Step 5: Project fields
-//           {
-//                $project: {
-//                     image: 1,
-//                     name: 1,
-//                     email: 1,
-//                     phoneNumber: '$phoneNumber',
-//                     subscriptions: {
-//                          $ifNull: [
-//                               {
-//                                    $cond: {
-//                                         if: { $ifNull: ['$latestSubscription.status', false] },
-//                                         then: {
-//                                              $concat: [
-//                                                   { $toUpper: { $substrCP: ['$latestSubscription.status', 0, 1] } },
-//                                                   { $substrCP: ['$latestSubscription.status', 1, { $strLenCP: '$latestSubscription.status' }] },
-//                                              ],
-//                                         },
-//                                         else: 'Inactive',
-//                                    },
-//                               },
-//                               'Inactive',
-//                          ],
-//                     },
-//                     StartDate: { $ifNull: ['$latestSubscription.createdAt', null] },
-//                     EndDate: { $ifNull: ['$latestSubscription.expiryDate', null] },
-//                },
-//           },
-
-//           // Step 6: Sort users by creation date
-//           { $sort: { createdAt: -1 } },
-
-//           // Step 7: Pagination
-//           { $skip: skip },
-//           { $limit: parseInt(limit) },
-//      ];
-
-//      const users = await User.aggregate(pipeline);
-
-//      return users.map((u) => ({
-//           ...u,
-//           StartDate: u.StartDate ? new Date(u.StartDate).toDateString() : null,
-//           EndDate: u.EndDate ? new Date(u.EndDate).toDateString() : null,
-//      }));
-// };
-
 // update user profile
 const updateProfileToDB = async (user: JwtPayload, payload: Partial<IUser>): Promise<Partial<IUser | null>> => {
      const { id } = user;
@@ -424,7 +324,6 @@ export const UserService = {
      verifyUserPassword,
      handleAppleAuthentication,
      handleGoogleAuthentication,
-     // getUsersWithSubscriptionsFromDB,
      getUserFromDB,
      blockUserToDB,
 };

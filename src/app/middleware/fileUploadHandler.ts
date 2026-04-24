@@ -53,13 +53,15 @@ const filterFilter = (req: Request, file: any, cb: FileFilterCallback) => {
   }
 };
 
-// 🔹 Export multer upload handler
+const upload = multer({
+  storage,
+  limits: { fileSize: 100 * 1024 * 1024 },
+  fileFilter: filterFilter,
+});
+
+// 🔹 Export multer upload helper and default fields middleware
 const fileUploadHandler = () =>
-  multer({
-    storage,
-    limits: { fileSize: 100 * 1024 * 1024 },
-    fileFilter: filterFilter,
-  }).fields([
+  upload.fields([
     { name: 'image', maxCount: 10 },
     { name: 'video', maxCount: 5 },
     { name: 'thumbnail', maxCount: 5 },
@@ -74,5 +76,5 @@ const fileUploadHandler = () =>
 
 // 🔹 Move only images/videos → S3
 
-
+export { upload };
 export default fileUploadHandler;

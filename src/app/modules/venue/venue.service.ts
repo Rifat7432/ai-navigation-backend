@@ -1,45 +1,62 @@
 import { StatusCodes } from 'http-status-codes';
+import AppError from '../../../errors/AppError';
 import { IVenue } from './venue.interface';
 import { Venue } from './venue.model';
-import AppError from '../../../errors/AppError';
 
-// create venue
-const createVenueToDB = async (payload: IVenue): Promise<IVenue> => {
-     const venue = await Venue.create(payload);
-     if (!venue) {
-          throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create venue');
-     }
-     return venue;
+const createVenueToDB = async (payload: IVenue) => {
+  const result = await Venue.create(payload);
+  return result;
 };
 
-// get all venues
-const getVenuesFromDB = async (query: any): Promise<IVenue[]> => {
-     const venues = await Venue.find(query);
-     return venues;
+const getAllVenuesFromDB = async () => {
+  const result = await Venue.find();
+  return result;
 };
 
-// get single venue
-const getVenueByIdFromDB = async (id: string): Promise<IVenue | null> => {
-     const venue = await Venue.findById(id);
-     return venue;
+const getNearbyVenuesFromDB = async (lat: number, lng: number, maxDistance: number = 5000) => {
+  const result = await Venue.find({
+    gpsCoordinates: {
+      $near: {
+        $geometry: {
+          type: 'Point',
+          coordinates: [lng, lat],
+        },
+        $maxDistance: maxDistance,
+      },
+    },
+  });
+  return result;
 };
 
-// update venue
-const updateVenueInDB = async (id: string, payload: Partial<IVenue>): Promise<IVenue | null> => {
-     const venue = await Venue.findByIdAndUpdate(id, payload, { new: true });
-     return venue;
+const getVenueByIdFromDB = async (id: string) => {
+  const result = await Venue.findById(id);
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Venue not found');
+  }
+  return result;
 };
 
-// delete venue (soft delete)
-const deleteVenueFromDB = async (id: string): Promise<IVenue | null> => {
-     const venue = await Venue.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
-     return venue;
+const updateVenueInDB = async (id: string, payload: Partial<IVenue>) => {
+  const result = await Venue.findByIdAndUpdate(id, payload, { new: true });
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Venue not found');
+  }
+  return result;
+};
+
+const deleteVenueFromDB = async (id: string) => {
+  const result = await Venue.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Venue not found');
+  }
+  return result;
 };
 
 export const VenueService = {
-     createVenueToDB,
-     getVenuesFromDB,
-     getVenueByIdFromDB,
-     updateVenueInDB,
-     deleteVenueFromDB,
+  createVenueToDB,
+  getAllVenuesFromDB,
+  getNearbyVenuesFromDB,
+  getVenueByIdFromDB,
+  updateVenueInDB,
+  deleteVenueFromDB,
 };

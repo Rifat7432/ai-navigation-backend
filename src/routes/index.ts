@@ -5,12 +5,12 @@ import { VenueRoutes } from '../app/modules/venue/venue.route';
 import { VenueZoneRoutes } from '../app/modules/venueZone/venueZone.route';
 import { VisualLandmarkRoutes } from '../app/modules/visualLandmark/visualLandmark.route';
 import { MediaAssetRoutes } from '../app/modules/mediaAsset/mediaAsset.route';
-import { ChatSessionRoutes } from '../app/modules/chatSession/chatSession.route';
+import { ChatSessionRoutes } from '../app/modules/chat/chat.route';
 import { LocationRoutes } from '../app/modules/location/location.route';
-import { NavigationSessionRoutes } from '../app/modules/navigationSession/navigationSession.route';
+import { NavigationSessionRoutes } from '../app/modules/navigation/navigation.route';
 import { SearchHistoryRoutes } from '../app/modules/searchHistory/searchHistory.route';
-import { VenueContributionRoutes } from '../app/modules/venueContribution/venueContribution.route';
-import { WalletTransactionRoutes } from '../app/modules/walletTransaction/walletTransaction.route';
+import { VenueContributionRoutes } from '../app/modules/contribution/contribution.route';
+import { WalletTransactionRoutes } from '../app/modules/walletTransaction/wallet.route';
 
 const router = express.Router();
 const routes = [

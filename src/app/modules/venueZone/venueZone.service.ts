@@ -1,45 +1,46 @@
 import { StatusCodes } from 'http-status-codes';
+import AppError from '../../../errors/AppError';
 import { IVenueZone } from './venueZone.interface';
 import { VenueZone } from './venueZone.model';
-import AppError from '../../../errors/AppError';
 
-// create venue zone
-const createVenueZoneToDB = async (payload: IVenueZone): Promise<IVenueZone> => {
-     const venueZone = await VenueZone.create(payload);
-     if (!venueZone) {
-          throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create venue zone');
-     }
-     return venueZone;
+const createVenueZoneToDB = async (payload: IVenueZone) => {
+  const result = await VenueZone.create(payload);
+  return result;
 };
 
-// get all venue zones
-const getVenueZonesFromDB = async (query: any): Promise<IVenueZone[]> => {
-     const venueZones = await VenueZone.find(query).populate('venue');
-     return venueZones;
+const getAllVenueZonesFromDB = async () => {
+  const result = await VenueZone.find().populate('venue');
+  return result;
 };
 
-// get single venue zone
-const getVenueZoneByIdFromDB = async (id: string): Promise<IVenueZone | null> => {
-     const venueZone = await VenueZone.findById(id).populate('venue');
-     return venueZone;
+const getVenueZoneByIdFromDB = async (id: string) => {
+  const result = await VenueZone.findById(id).populate('venue');
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Venue Zone not found');
+  }
+  return result;
 };
 
-// update venue zone
-const updateVenueZoneInDB = async (id: string, payload: Partial<IVenueZone>): Promise<IVenueZone | null> => {
-     const venueZone = await VenueZone.findByIdAndUpdate(id, payload, { new: true });
-     return venueZone;
+const updateVenueZoneInDB = async (id: string, payload: Partial<IVenueZone>) => {
+  const result = await VenueZone.findByIdAndUpdate(id, payload, { new: true });
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Venue Zone not found');
+  }
+  return result;
 };
 
-// delete venue zone (soft delete)
-const deleteVenueZoneFromDB = async (id: string): Promise<IVenueZone | null> => {
-     const venueZone = await VenueZone.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
-     return venueZone;
+const deleteVenueZoneFromDB = async (id: string) => {
+  const result = await VenueZone.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Venue Zone not found');
+  }
+  return result;
 };
 
 export const VenueZoneService = {
-     createVenueZoneToDB,
-     getVenueZonesFromDB,
-     getVenueZoneByIdFromDB,
-     updateVenueZoneInDB,
-     deleteVenueZoneFromDB,
+  createVenueZoneToDB,
+  getAllVenueZonesFromDB,
+  getVenueZoneByIdFromDB,
+  updateVenueZoneInDB,
+  deleteVenueZoneFromDB,
 };

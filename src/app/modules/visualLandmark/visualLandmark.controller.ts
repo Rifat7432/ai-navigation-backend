@@ -4,64 +4,59 @@ import sendResponse from '../../../shared/sendResponse';
 import { VisualLandmarkService } from './visualLandmark.service';
 
 const createVisualLandmark = catchAsync(async (req, res) => {
-     const visualLandmarkData = req.body;
-     const result = await VisualLandmarkService.createVisualLandmarkToDB(visualLandmarkData);
-     sendResponse(res, {
-          success: true,
-          statusCode: StatusCodes.CREATED,
-          message: 'Visual landmark created successfully',
-          data: result,
-     });
+  const result = await VisualLandmarkService.createVisualLandmarkToDB(req.body);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Visual Landmark created successfully',
+    data: result,
+  });
 });
 
-const getVisualLandmarks = catchAsync(async (req, res) => {
-     const result = await VisualLandmarkService.getVisualLandmarksFromDB(req.query);
-     sendResponse(res, {
-          success: true,
-          statusCode: StatusCodes.OK,
-          message: 'Visual landmarks retrieved successfully',
-          data: result,
-     });
+const getAllVisualLandmarks = catchAsync(async (req, res) => {
+  const result = await VisualLandmarkService.getAllVisualLandmarksFromDB();
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Visual Landmarks retrieved successfully',
+    data: result,
+  });
 });
 
-const getVisualLandmark = catchAsync(async (req, res) => {
-     const { id } = req.params;
-     const result = await VisualLandmarkService.getVisualLandmarkByIdFromDB(id);
-     sendResponse(res, {
-          success: true,
-          statusCode: StatusCodes.OK,
-          message: 'Visual landmark retrieved successfully',
-          data: result,
-     });
+const getVisualLandmarkById = catchAsync(async (req, res) => {
+  const result = await VisualLandmarkService.getVisualLandmarkByIdFromDB(req.params.id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Visual Landmark retrieved successfully',
+    data: result,
+  });
 });
 
 const updateVisualLandmark = catchAsync(async (req, res) => {
-     const { id } = req.params;
-     const visualLandmarkData = req.body;
-     const result = await VisualLandmarkService.updateVisualLandmarkInDB(id, visualLandmarkData);
-     sendResponse(res, {
-          success: true,
-          statusCode: StatusCodes.OK,
-          message: 'Visual landmark updated successfully',
-          data: result,
-     });
+  const result = await VisualLandmarkService.updateVisualLandmarkInDB(req.params.id, req.body);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Visual Landmark updated successfully',
+    data: result,
+  });
 });
 
 const deleteVisualLandmark = catchAsync(async (req, res) => {
-     const { id } = req.params;
-     const result = await VisualLandmarkService.deleteVisualLandmarkFromDB(id);
-     sendResponse(res, {
-          success: true,
-          statusCode: StatusCodes.OK,
-          message: 'Visual landmark deleted successfully',
-          data: result,
-     });
+  const result = await VisualLandmarkService.deleteVisualLandmarkFromDB(req.params.id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Visual Landmark deleted successfully',
+    data: result,
+  });
 });
 
 export const VisualLandmarkController = {
-     createVisualLandmark,
-     getVisualLandmarks,
-     getVisualLandmark,
-     updateVisualLandmark,
-     deleteVisualLandmark,
+  createVisualLandmark,
+  getAllVisualLandmarks,
+  getVisualLandmarkById,
+  updateVisualLandmark,
+  deleteVisualLandmark,
 };

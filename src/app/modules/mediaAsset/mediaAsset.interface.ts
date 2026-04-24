@@ -1,10 +1,15 @@
-import { Model } from 'mongoose';
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 export type IMediaAsset = {
-     user: Types.ObjectId;
+     user: Types.ObjectId | string;
      mediaType: 'image' | 'video' | 'audio';
-     purpose: 'grounding_photo' | 'recheck_photo' | 'destination_photo' | 'venue_contribution' | 'voice_command' | 'chat_attachment';
+     purpose:
+          | 'grounding_photo'
+          | 'recheck_photo'
+          | 'destination_photo'
+          | 'venue_contribution'
+          | 'voice_command'
+          | 'chat_attachment';
      url: string;
      mimeType?: string;
      sizeBytes?: number;
@@ -14,7 +19,7 @@ export type IMediaAsset = {
           detectedVenueType?: string;
           detectedZone?: string;
           detectedLandmarks?: {
-               landmarkId: Types.ObjectId;
+               landmarkId: Types.ObjectId | string;
                name: string;
                confidence: number;
                boundingBox: {
@@ -30,7 +35,7 @@ export type IMediaAsset = {
           tags?: string[];
           analysedAt?: Date;
      };
-     linkedVenue?: Types.ObjectId;
+     linkedVenue?: Types.ObjectId | string;
      isDeleted?: boolean;
 };
 

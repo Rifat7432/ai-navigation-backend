@@ -7,16 +7,15 @@ import { SearchHistoryValidation } from './searchHistory.validation';
 
 const router = express.Router();
 
-// Routes
-router
-     .route('/')
-     .post(auth(USER_ROLES.USER), validateRequest(SearchHistoryValidation.createSearchHistoryZodSchema), SearchHistoryController.createSearchHistory)
-     .get(auth(USER_ROLES.USER), SearchHistoryController.getSearchHistories);
+router.post(
+  '/',
+  auth(USER_ROLES.USER),
+  validateRequest(SearchHistoryValidation.createSearchHistoryZodSchema),
+  SearchHistoryController.createSearchHistory
+);
 
-router
-     .route('/:id')
-     .get(auth(USER_ROLES.USER), SearchHistoryController.getSearchHistory)
-     .patch(auth(USER_ROLES.USER), validateRequest(SearchHistoryValidation.updateSearchHistoryZodSchema), SearchHistoryController.updateSearchHistory)
-     .delete(auth(USER_ROLES.USER), SearchHistoryController.deleteSearchHistory);
+router.get('/', auth(USER_ROLES.USER), SearchHistoryController.getSearchHistory);
 
-export const SearchHistoryRoutes = router;
+router.delete('/:id', auth(USER_ROLES.USER), SearchHistoryController.deleteSearchHistory);
+
+export const SearchHistoryRouter = router;

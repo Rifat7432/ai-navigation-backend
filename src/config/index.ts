@@ -10,7 +10,8 @@ export default {
      database_url: process.env.DATABASE_URL,
      node_env: process.env.NODE_ENV,
      port: process.env.PORT,
-
+     openai_api_key: process.env.OPENAI_API_KEY,
+     google_maps_api_key: process.env.GOOGLE_MAPS_API_KEY,
      bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
      socket_port: process.env.SOCKET_PORT,
      allowed_origins: process.env.ALLOWED_ORIGINS,

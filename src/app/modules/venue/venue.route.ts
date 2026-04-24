@@ -7,16 +7,24 @@ import { VenueValidation } from './venue.validation';
 
 const router = express.Router();
 
-// Routes
-router
-     .route('/')
-     .post(auth(USER_ROLES.ADMIN), validateRequest(VenueValidation.createVenueZodSchema), VenueController.createVenue)
-     .get(VenueController.getVenues);
+router.post(
+  '/',
+  auth(USER_ROLES.ADMIN),
+  validateRequest(VenueValidation.createVenueZodSchema),
+  VenueController.createVenue
+);
 
-router
-     .route('/:id')
-     .get(VenueController.getVenue)
-     .patch(auth(USER_ROLES.ADMIN), validateRequest(VenueValidation.updateVenueZodSchema), VenueController.updateVenue)
-     .delete(auth(USER_ROLES.ADMIN), VenueController.deleteVenue);
+router.get('/', VenueController.getAllVenues);
 
-export const VenueRoutes = router;
+router.get('/:id', VenueController.getVenueById);
+
+router.patch(
+  '/:id',
+  auth(USER_ROLES.ADMIN),
+  validateRequest(VenueValidation.updateVenueZodSchema),
+  VenueController.updateVenue
+);
+
+router.delete('/:id', auth(USER_ROLES.ADMIN), VenueController.deleteVenue);
+
+export const VenueRouter = router;

@@ -7,16 +7,24 @@ import { VisualLandmarkValidation } from './visualLandmark.validation';
 
 const router = express.Router();
 
-// Routes
-router
-     .route('/')
-     .post(auth(USER_ROLES.ADMIN), validateRequest(VisualLandmarkValidation.createVisualLandmarkZodSchema), VisualLandmarkController.createVisualLandmark)
-     .get(VisualLandmarkController.getVisualLandmarks);
+router.post(
+  '/',
+  auth(USER_ROLES.ADMIN),
+  validateRequest(VisualLandmarkValidation.createVisualLandmarkZodSchema),
+  VisualLandmarkController.createVisualLandmark
+);
 
-router
-     .route('/:id')
-     .get(VisualLandmarkController.getVisualLandmark)
-     .patch(auth(USER_ROLES.ADMIN), validateRequest(VisualLandmarkValidation.updateVisualLandmarkZodSchema), VisualLandmarkController.updateVisualLandmark)
-     .delete(auth(USER_ROLES.ADMIN), VisualLandmarkController.deleteVisualLandmark);
+router.get('/', VisualLandmarkController.getAllVisualLandmarks);
 
-export const VisualLandmarkRoutes = router;
+router.get('/:id', VisualLandmarkController.getVisualLandmarkById);
+
+router.patch(
+  '/:id',
+  auth(USER_ROLES.ADMIN),
+  validateRequest(VisualLandmarkValidation.updateVisualLandmarkZodSchema),
+  VisualLandmarkController.updateVisualLandmark
+);
+
+router.delete('/:id', auth(USER_ROLES.ADMIN), VisualLandmarkController.deleteVisualLandmark);
+
+export const VisualLandmarkRouter = router;
